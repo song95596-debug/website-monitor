@@ -2,7 +2,7 @@ import requests
 import hashlib
 from datetime import datetime
 
-MONITOR_URL = "https://example.com"
+MONITOR_URL = "https://news.baidu.com"
 RECORD_FILE = "record.md"
 HASH_FILE = ".last_hash.txt"
 
