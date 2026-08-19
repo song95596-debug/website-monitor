@@ -1,35 +1,40 @@
 name: Website Monitor
 
 on:
-  schedule:
-    - cron: "0 */6 * * *"
   workflow_dispatch:
-
-permissions:
-  contents: write
+  schedule:
+    - cron: '0 */6 * * *'
 
 jobs:
   run-monitor:
     runs-on: ubuntu-latest
     steps:
-      - name: 拉取仓库代码
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 设置Python环境
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
-      - name: 安装依赖
-        run: pip install -r requirements.txt
-
-      - name: 执行监控脚本
-        run: python monitor.py
-
-      - name: 自动提交更新日志
+      - name: Install dependencies
         run: |
-          git config --local user.name "${{ github.actor }}"
-          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
+          pip install -r requirements.txt
+
+      - name: Run monitor script
+        id: monitor_result
+        run: |
+          python monitor.py
+
+      - name: 发送微信通知
+        if: steps.monitor_result.outputs.changed == 'true'
+        run: |
+          curl "https://sctapi.ftqq.com/${{ secrets.SENDKEY }}.send?title=监控网站更新提醒&desp=百度新闻页面发生了变化，请查看！"
+
+      - name: Commit & push log
+        run: |
+          git config --global user.name "github‑actions[bot]"
+          git config --global user.email "github‑actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "auto update log $(date)" || echo "没有新改动无需提交"
+          git commit -m "auto update log" || echo "no changes"
           git push
