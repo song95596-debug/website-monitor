@@ -3,7 +3,7 @@ import hashlib
 import os
 from datetime import datetime
 
-MONITOR_URL = "https://news.baidu.com"
+MONITOR_URL = "https://cie.huanghuai.edu.cn/index.htm"
 RECORD_FILE = "record.md"
 HASH_FILE = ".last_hash.txt"
 
